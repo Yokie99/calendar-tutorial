@@ -10,14 +10,15 @@ import { EventSourceInput } from '@fullcalendar/core/index.js'
 
 import AddEventModal from './Components/AddEventModal'
 import DeleteEventModal from './Components/DeleteEventModal'
+import { start } from 'repl'
 
 export default function Home() {
 
 
   interface Event {
     title: string;
-    start: Date | string;
-    end: Date | string;
+    start: string;
+    end:string;
     allDay: boolean;
     id: number;
     //color
@@ -35,7 +36,7 @@ export default function Home() {
   const [allEvents, setAllEvents] = useState<Event[]>([])
   const [showModal, setShowModal] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
-  const [idToDelete, setIdToDelete] = useState<number | null>(null)
+  const [idToDelete, setIdToDelete] = useState<number>(999999999)
   const [newEvent, setNewEvent] = useState<Event>({
     title: '',
     start: '',
@@ -44,24 +45,34 @@ export default function Home() {
     id: 0
   })
 
-  useEffect(() => {
-    let draggableEl = document.getElementById('draggable-el')
-    if (draggableEl) {
-      new Draggable(draggableEl, {
-        itemSelector: ".fc-event",
-        eventData: function (eventEl) {
-          let title = eventEl.getAttribute("title")
-          let id = eventEl.getAttribute("data")
-          let start = eventEl.getAttribute("start")
-          return { title, id, start }
-        }
-      })
-    }
-  }, [])
+  const [startTime, setStartTime] = useState<string>("");
+  const [endTime, setEndTime] = useState<string>("")
 
-  function handleDateClick(arg: { date: Date, allDay: boolean }) {
-    setNewEvent({ ...newEvent, start: arg.date, allDay: arg.allDay, id: new Date().getTime() })
+  // useEffect(() => {
+  //   let draggableEl = document.getElementById('draggable-el')
+  //   if (draggableEl) {
+  //     new Draggable(draggableEl, {
+  //       itemSelector: ".fc-event",
+  //       eventData: function (eventEl) {
+  //         let title = eventEl.getAttribute("title")
+  //         let id = eventEl.getAttribute("data")
+  //         let start = eventEl.getAttribute("start")
+  //         return { title, id, start }
+  //       }
+  //     })
+  //   }
+  // }, [])
+
+  function handleDateClick(arg: { dateStr: any, allDay: boolean }) {
+    setNewEvent({ ...newEvent, start: arg.dateStr, allDay: arg.allDay, id: new Date().getTime() })
     setShowModal(true)
+
+    setStartTime(arg.dateStr + " ")
+    setEndTime(arg.dateStr + " ")
+    const test = allEvents
+
+    console.log(test)
+    
   }
   function addEvent(data: DropArg) {
     const event = { ...newEvent, start: data.date.toISOString(), title: data.draggedEl.innerText, allDay: data.allDay, id: new Date().getTime() }
@@ -76,7 +87,7 @@ export default function Home() {
   function handleDelete() {
     setAllEvents(allEvents.filter(event => Number(event.id) !== Number(idToDelete)))
     setShowDeleteModal(false)
-    setIdToDelete(null)
+    setIdToDelete(999999)
   }
 
   function handleCloseModal() {
@@ -88,8 +99,10 @@ export default function Home() {
       allDay: false,
       id: 0
     })
+    setStartTime("")
+    setEndTime("")
     setShowDeleteModal(false)
-    setIdToDelete(null)
+    setIdToDelete(9999999)
   }
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
@@ -101,14 +114,14 @@ export default function Home() {
   const handleEndTimeChange = (time:string): void => {
     setNewEvent({
       ...newEvent,
-      end: (time + ":00" ),
+      end: (endTime + time ),
       allDay: false,
     })
   }
-  const handleStartTimeChange = (time:string, arg: { date: Date}): void => {
+  const handleStartTimeChange = (time:string): void => {
     setNewEvent({
       ...newEvent,
-      start: (time ),
+      start: (startTime + time),
       allDay: false,
     })
   }
@@ -133,9 +146,9 @@ export default function Home() {
         <h1 className="font-bold text-2xl text-gray-700">Calendar</h1>
       </nav>
 
-      <main className="flex min-h-screen flex-col items-center justify-between p-24">
-        <div className="grid grid-cols-10">
-          <div className="col-span-8">
+      <main className="p-20 h-full">
+        
+          
             <FullCalendar
               plugins={[
                 dayGridPlugin,
@@ -157,21 +170,7 @@ export default function Home() {
               drop={(data) => addEvent(data)}
               eventClick={(data) => handleDeleteModal(data)}
             />
-          </div>
-          <div id="draggable-el" className="ml-8 w-full border-2 p-2 rounded-md mt-16 lg:h-1/2 bg-violet-50">
-            <h1 className="font-bold text-lg text-center">Drag Event</h1>
-            {events.map(event => (
-              <div
-                className="fc-event border-2 p-1 m-2 w-full rounded-md ml-auto text-center bg-white"
-                title={event.title}
-                key={event.id}
-              >
-                {event.title}
-              </div>
-            ))}
-          </div>
-
-        </div>
+          
 
         <AddEventModal 
           showModal={showModal}
@@ -188,6 +187,7 @@ export default function Home() {
          setShowDeleteModal={setShowDeleteModal}
          handleDelete={handleDelete}
          handleCloseModal={handleCloseModal}
+         eventData={allEvents.filter(obj => obj.id === idToDelete)[0]}
         />
 
 
