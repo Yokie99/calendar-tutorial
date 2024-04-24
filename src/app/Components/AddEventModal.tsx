@@ -3,9 +3,12 @@ import { Fragment, useEffect, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { CheckIcon, ExclamationTriangleIcon } from '@heroicons/react/20/solid'
 
+import TimeSelector from './TimeSelector'
+
 interface Event {
     title: string;
     start: Date | string;
+    end: Date | string;
     allDay: boolean;
     id: number;
   }
@@ -13,11 +16,28 @@ interface AddEventModalProps{
         showModal: boolean
         setShowModal: React.Dispatch<React.SetStateAction<boolean>>
         handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void
-        handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+        handleTitleChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+        handleEndTimeChange: (time:string) => void
+        handleStartTimeChange: (time:string) => void
         newEvent: Event
         handleCloseModal: () => void
     }
 const AddEventModal = (props:AddEventModalProps) => {
+
+   
+    
+    const handleEndTimeChange = (time: string) => {
+        console.log(`Selected time: ${time}`);
+        props.handleEndTimeChange(time)
+    
+        // You can use this time value for your event planning logic
+      };
+    const handleStartTimeChange = (time: string) => {
+        console.log(`Selected time: ${time}`);
+        props.handleStartTimeChange(time)
+     
+        // You can use this time value for your event planning logic
+      };
     
     
   return (
@@ -49,13 +69,12 @@ const AddEventModal = (props:AddEventModalProps) => {
                 >
                   <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
                     <div>
-                      <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
-                        <CheckIcon className="h-6 w-6 text-green-600" aria-hidden="true" />
-                      </div>
+                     
                       <div className="mt-3 text-center sm:mt-5">
                         <Dialog.Title as="h3" className="text-base font-semibold leading-6 text-gray-900">
                           Add Event
                         </Dialog.Title>
+
                         <form action="submit" onSubmit={props.handleSubmit}>
                           <div className="mt-2">
                             <input type="text" name="title" className="block w-full rounded-md border-0 py-1.5 text-gray-900 
@@ -63,8 +82,18 @@ const AddEventModal = (props:AddEventModalProps) => {
                             focus:ring-2 
                             focus:ring-inset focus:ring-violet-600 
                             sm:text-sm sm:leading-6"
-                              value={props.newEvent.title} onChange={(e) => props.handleChange(e)} placeholder="Title" />
+                              value={props.newEvent.title} onChange={(e) => props.handleTitleChange(e)} placeholder="Title" />
                           </div>
+
+                          <div className='mt-2 flex items-center gap-5'>
+                            <p>Start Time:</p>
+                            <TimeSelector onChange={handleStartTimeChange}/>
+                          </div>
+                          <div className='mt-2 flex items-center gap-5'>
+                            <p>End Time:</p>
+                            <TimeSelector onChange={handleEndTimeChange}/>
+                          </div>
+                          
                           <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
                             <button
                               type="submit"

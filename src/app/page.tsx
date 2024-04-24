@@ -17,8 +17,12 @@ export default function Home() {
   interface Event {
     title: string;
     start: Date | string;
+    end: Date | string;
     allDay: boolean;
     id: number;
+    //color
+    //program
+    //
   }
   const [events, setEvents] = useState([
     { title: 'event 1', id: '1' },
@@ -35,6 +39,7 @@ export default function Home() {
   const [newEvent, setNewEvent] = useState<Event>({
     title: '',
     start: '',
+    end: '',
     allDay: false,
     id: 0
   })
@@ -79,6 +84,7 @@ export default function Home() {
     setNewEvent({
       title: '',
       start: '',
+      end: '',
       allDay: false,
       id: 0
     })
@@ -86,10 +92,24 @@ export default function Home() {
     setIdToDelete(null)
   }
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     setNewEvent({
       ...newEvent,
       title: e.target.value
+    })
+  }
+  const handleEndTimeChange = (time:string): void => {
+    setNewEvent({
+      ...newEvent,
+      end: (time + ":00" ),
+      allDay: false,
+    })
+  }
+  const handleStartTimeChange = (time:string, arg: { date: Date}): void => {
+    setNewEvent({
+      ...newEvent,
+      start: (time ),
+      allDay: false,
     })
   }
 
@@ -97,9 +117,11 @@ export default function Home() {
     e.preventDefault()
     setAllEvents([...allEvents, newEvent])
     setShowModal(false)
+    console.log(newEvent)
     setNewEvent({
       title: '',
       start: '',
+      end: '',
       allDay: false,
       id: 0
     })
@@ -110,6 +132,7 @@ export default function Home() {
       <nav className="flex justify-between mb-12 border-b border-violet-100 p-4">
         <h1 className="font-bold text-2xl text-gray-700">Calendar</h1>
       </nav>
+
       <main className="flex min-h-screen flex-col items-center justify-between p-24">
         <div className="grid grid-cols-10">
           <div className="col-span-8">
@@ -122,7 +145,7 @@ export default function Home() {
               headerToolbar={{
                 left: 'prev,next today',
                 center: 'title',
-                right: 'resourceTimelineWook, dayGridMonth,timeGridWeek'
+                right: 'dayGridMonth,timeGridWeek'
               }}
               events={allEvents as EventSourceInput}
               nowIndicator={true}
@@ -150,17 +173,16 @@ export default function Home() {
 
         </div>
 
-
         <AddEventModal 
           showModal={showModal}
           setShowModal={setShowModal}
           handleSubmit={handleSubmit}
-          handleChange={handleChange}
+          handleTitleChange={handleTitleChange}
+          handleEndTimeChange={handleEndTimeChange}
+          handleStartTimeChange={handleStartTimeChange}
           newEvent={newEvent}
           handleCloseModal={handleCloseModal}
         />
-
-
         <DeleteEventModal
          showDeleteModal={showDeleteModal}
          setShowDeleteModal={setShowDeleteModal}
