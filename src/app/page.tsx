@@ -21,7 +21,7 @@ export default function Home() {
     end:string;
     allDay: boolean;
     id: number;
-    //color
+    color: string
     //program
     //
   }
@@ -42,7 +42,8 @@ export default function Home() {
     start: '',
     end: '',
     allDay: false,
-    id: 0
+    id: 0,
+    color: ''
   })
 
   const [startTime, setStartTime] = useState<string>("");
@@ -97,7 +98,8 @@ export default function Home() {
       start: '',
       end: '',
       allDay: false,
-      id: 0
+      id: 0,
+      color: ''
     })
     setStartTime("")
     setEndTime("")
@@ -125,6 +127,13 @@ export default function Home() {
       allDay: false,
     })
   }
+  const handleColorChange = (color:string): void => {
+    setNewEvent({
+      ...newEvent,
+      color: color
+    })
+  }
+
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -136,7 +145,8 @@ export default function Home() {
       start: '',
       end: '',
       allDay: false,
-      id: 0
+      id: 0,
+      color: ''
     })
   }
 
@@ -181,6 +191,7 @@ export default function Home() {
           handleStartTimeChange={handleStartTimeChange}
           newEvent={newEvent}
           handleCloseModal={handleCloseModal}
+          handleColorChange={handleColorChange}
         />
         <DeleteEventModal
          showDeleteModal={showDeleteModal}
